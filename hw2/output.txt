@@ -1,0 +1,10 @@
+
+--- Performance Report ---
+Total Market Ticks Processed: 100000
+Total Orders Placed: 93996
+Average Tick-to-Trade Latency (ns): 38255625
+Maximum Tick-to-Trade Latency (ns): 60930917
+Orders triggered by Signal 1: 10021
+Orders triggered by Signal 2: 93201
+Orders triggered by Signal 3: 16783
+Total Runtime (ms): 77
