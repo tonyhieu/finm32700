@@ -1,4 +1,5 @@
 #include "matrix_operations.h"
+#include "matrix_operations_optimized.h"
 #include <cmath>
 #include <iostream>
 #include <string>
@@ -8,6 +9,15 @@ int tests_passed = 0;
 int tests_failed = 0;
 
 bool approx_equal(double a, double b) { return std::abs(a - b) < EPSILON; }
+
+bool compare_arrays(const double *arr1, const double *arr2, int size, double epsilon = EPSILON) {
+  for (int i = 0; i < size; ++i) {
+    if (std::abs(arr1[i] - arr2[i]) > epsilon) {
+      return false;
+    }
+  }
+  return true;
+}
 
 void report_test(const std::string &test_name, bool passed) {
   if (passed) {
@@ -405,6 +415,136 @@ void test_multiply_mm_transposed_b_3x3() {
   report_test("multiply_mm_transposed_b_3x3", passed);
 }
 
+// ========== OPTIMIZED BLOCKED MATRIX MULTIPLICATION TESTS ==========
+
+// Test multiply_mm_blocked - basic 2x2 matrices
+void test_multiply_mm_blocked_basic() {
+  std::cout << "Test 16: multiply_mm_blocked - basic 2x2 matrices" << std::endl;
+  
+  double matrixA[] = {1, 2, 3, 4};  // 2x2
+  double matrixB[] = {5, 6, 7, 8};  // 2x2
+  double result[4] = {0};
+
+  multiply_mm_blocked(matrixA, 2, 2, matrixB, 2, 2, result);
+
+  double expected[] = {19, 22, 43, 50};
+
+  report_test("multiply_mm_blocked - basic 2x2", compare_arrays(result, expected, 4));
+}
+
+// Test multiply_mm_blocked - non-square matrices
+void test_multiply_mm_blocked_nonsquare() {
+  std::cout << "Test 17: multiply_mm_blocked - non-square 2x3 * 3x2" << std::endl;
+  
+  double matrixA[] = {1, 2, 3, 4, 5, 6};  // 2x3
+  double matrixB[] = {7, 8, 9, 10, 11, 12};  // 3x2
+  double result[4] = {0};
+
+  multiply_mm_blocked(matrixA, 2, 3, matrixB, 3, 2, result);
+
+  double expected[] = {58, 64, 139, 154};
+
+  report_test("multiply_mm_blocked - non-square", compare_arrays(result, expected, 4));
+}
+
+// Test multiply_mm_blocked - identity matrix
+void test_multiply_mm_blocked_identity() {
+  std::cout << "Test 18: multiply_mm_blocked - identity matrix" << std::endl;
+  
+  double matrixA[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};  // 3x3
+  double identity[] = {1, 0, 0, 0, 1, 0, 0, 0, 1};  // 3x3 identity
+  double result[9] = {0};
+
+  multiply_mm_blocked(matrixA, 3, 3, identity, 3, 3, result);
+
+  report_test("multiply_mm_blocked - identity", compare_arrays(result, matrixA, 9));
+}
+
+// Test multiply_mm_blocked - 1x1 edge case
+void test_multiply_mm_blocked_1x1() {
+  std::cout << "Test 19: multiply_mm_blocked - 1x1 matrices (edge case)" << std::endl;
+  
+  double matrixA[] = {5.0};
+  double matrixB[] = {3.0};
+  double result[1] = {0};
+
+  multiply_mm_blocked(matrixA, 1, 1, matrixB, 1, 1, result);
+
+  double expected[] = {15.0};
+
+  report_test("multiply_mm_blocked - 1x1", compare_arrays(result, expected, 1));
+}
+
+// Test multiply_mm_blocked - larger matrix (64x64) for block size testing
+void test_multiply_mm_blocked_large() {
+  std::cout << "Test 20: multiply_mm_blocked - 64x64 matrix (block boundary test)" << std::endl;
+  
+  const int N = 64;
+  double *A = new double[N * N];
+  double *B = new double[N * N];
+  double *result = new double[N * N];
+  double *expected = new double[N * N];
+
+  // Initialize with simple pattern
+  for (int i = 0; i < N * N; ++i) {
+    A[i] = (i % 10) + 1.0;
+    B[i] = ((i * 2) % 10) + 1.0;
+  }
+
+  // Compute expected result with naive implementation
+  multiply_mm_naive(A, N, N, B, N, N, expected);
+
+  // Compute with blocked implementation
+  multiply_mm_blocked(A, N, N, B, N, N, result);
+
+  bool passed = compare_arrays(result, expected, N * N);
+
+  delete[] A;
+  delete[] B;
+  delete[] result;
+  delete[] expected;
+
+  report_test("multiply_mm_blocked - 64x64", passed);
+}
+
+// Test multiply_mm_blocked vs naive - verify consistency across multiple sizes
+void test_multiply_mm_blocked_vs_naive() {
+  std::cout << "Test 21: multiply_mm_blocked - vs naive (sizes 33, 65, 100)" << std::endl;
+  
+  const int sizes[] = {33, 65, 100};  // Test non-aligned and aligned sizes
+  bool all_passed = true;
+
+  for (int size : sizes) {
+    double *A = new double[size * size];
+    double *B = new double[size * size];
+    double *result_naive = new double[size * size];
+    double *result_blocked = new double[size * size];
+
+    // Initialize with semi-random pattern
+    for (int i = 0; i < size * size; ++i) {
+      A[i] = ((i * 3) % 17) / 7.0;
+      B[i] = ((i * 5) % 13) / 11.0;
+    }
+
+    multiply_mm_naive(A, size, size, B, size, size, result_naive);
+    multiply_mm_blocked(A, size, size, B, size, size, result_blocked);
+
+    bool passed = compare_arrays(result_naive, result_blocked, size * size, 1e-9);
+    
+    if (!passed) {
+      std::cout << "  Failed at size " << size << std::endl;
+      all_passed = false;
+    }
+
+    delete[] A;
+    delete[] B;
+    delete[] result_naive;
+    delete[] result_blocked;
+  }
+
+  report_test("multiply_mm_blocked - vs naive", all_passed);
+}
+
 void test_multiply_mm_transposed_b_wide() {
   std::cout << "Test 16: multiply_mm_transposed_b - 3x2 * 2x4 (B given as B^T)" << std::endl;
 
@@ -473,7 +613,16 @@ int main() {
   test_multiply_mm_transposed_b_nonsquare();
   test_multiply_mm_transposed_b_identity();
   test_multiply_mm_transposed_b_3x3();
-  // test_multiply_mm_transposed_b_wide();  // Skipped - dimension constraint
+  std::cout << std::endl;
+
+  // Matrix-matrix multiplication tests (blocked/optimized)
+  std::cout << "--- Matrix-Matrix (Blocked/Optimized) Tests ---" << std::endl;
+  test_multiply_mm_blocked_basic();
+  test_multiply_mm_blocked_nonsquare();
+  test_multiply_mm_blocked_identity();
+  test_multiply_mm_blocked_1x1();
+  test_multiply_mm_blocked_large();
+  test_multiply_mm_blocked_vs_naive();
   std::cout << std::endl;
 
   // Summary

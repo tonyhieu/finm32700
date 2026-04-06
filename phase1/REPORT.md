@@ -4,20 +4,13 @@
 
 ### 1. Benchmarking Framework
 
-We developed a comprehensive benchmarking framework using `std::chrono` to measure execution times with microsecond precision. The framework includes:
-
-- **Multiple runs**: Each test performs 5-20 iterations
-- **Statistical analysis**: Calculates mean, standard deviation, min, and max execution times
-- **Warm-up**: Initial runs to ensure cache is populated
-- **Variance tracking**: Standard deviation to assess measurement stability
+We developed a benchmarking framework using `std::chrono` for high-resolution timing. Each benchmark runs multiple iterations (5-20 depending on the operation's cost) and computes statistical measures including mean execution time, standard deviation, minimum, and maximum. This approach accounts for system noise and ensures measurement reliability.
 
 ### 2. Cache Locality Analysis
 
 #### 2.1 Matrix-Vector Multiplication: Row-Major vs Column-Major
 
-**Test Setup**: Square matrices of varying sizes (100×100 to 2000×2000)
-
-**Results**:
+We tested square matrices ranging from 100×100 to 2000×2000, comparing row-major against column-major storage:
 
 | Size | Row-Major (ms) | Column-Major (ms) | Speedup |
 |------|----------------|-------------------|---------|
@@ -26,21 +19,11 @@ We developed a comprehensive benchmarking framework using `std::chrono` to measu
 | 1000 | 0.6952        | 1.3624           | 1.96x   |
 | 2000 | 2.1883        | 4.1821           | 1.91x   |
 
-**Analysis**:
-
-Row-major matrix-vector multiplication consistently outperforms column-major by **1.9-3.6x**. This is because:
-
-1. **Spatial Locality**: In row-major order, matrix elements in the same row are stored contiguously in memory. When accessing `matrix[r*cols + c]` and incrementing `c`, we're accessing adjacent memory locations.
-
-2. **Cache Line Utilization**: Modern CPUs fetch entire cache lines (typically 64 bytes = 8 doubles). Row-major access loads a cache line and uses all 8 values before moving to the next line. Column-major access loads a cache line but only uses one value, leading to poor cache utilization.
-
-3. **Prefetcher Efficiency**: Hardware prefetchers detect sequential access patterns in row-major, bringing the next cache line before it's needed. Column-major's strided access pattern (jumping `rows` elements) is harder for prefetchers to predict.
+Row-major storage is consistently 1.9-3.6x faster than column-major. This performance difference is due to spatial locality: when accessing a row of a row-major matrix, consecutive elements are stored adjacently in memory. When the CPU fetches a cache line (64 bytes, or 8 doubles), all 8 values are used before the next cache line is needed. Column-major storage stores columns contiguously, so row access jumps by `rows` elements each time. This loads cache lines but only uses one value from each, wasting the other 7 slots. The hardware prefetcher can predict sequential access patterns in row-major layout but struggles with the large strides in column-major access.
 
 #### 2.2 Matrix-Matrix Multiplication: Naive vs Transposed B
 
-**Test Setup**: Square matrices (64×64 to 512×512)
-
-**Results**:
+For matrix-matrix multiplication, we compared the naive implementation against a version that takes B in transposed form:
 
 | Size | Naive (ms) | Transposed B (ms) | Speedup |
 |------|------------|-------------------|---------|
@@ -49,27 +32,13 @@ Row-major matrix-vector multiplication consistently outperforms column-major by 
 | 256  | 9.2796    | 5.5776           | 1.66x   |
 | 512  | 62.5985   | 53.5158          | 1.17x   |
 
-**Analysis**:
+The results vary with matrix size. For small matrices (64×64), the transposed version is 1.22x faster since both matrices fit in L1 cache and benefit from the row-row access pattern. At 128×128, the naive implementation is faster because it uses `multiply_mv_row_major` which handles column extraction efficiently at this size. For larger matrices (256×256 and above), the transposed version is 1.17-1.66x faster because the row-row dot product pattern has better cache locality than accessing B column-wise.
 
-Results show variable performance depending on matrix size:
-
-- **Small matrices (64×64)**: Transposed B is 1.22x faster. Both matrices fit in L1 cache, transposed approach benefits from better access patterns.
-
-- **Medium matrices (128×128)**: Naive is actually 1.9x faster (0.53x speedup). This anomaly likely occurs because our naive implementation uses `multiply_mv_row_major` which extracts columns efficiently.
-
-- **Large matrices (256×256, 512×512)**: Transposed B wins by 1.17-1.66x. As matrices exceed cache sizes, the transposed approach's row-row dot product pattern provides better cache locality.
-
-**Memory Access Pattern Comparison**:
-
-- **Naive (A×B)**: Accesses A row-wise (good) but B column-wise (poor). Each element of B requires jumping `colsB` positions in memory.
-  
-- **Transposed (A×B^T)**: Both A and B^T accessed row-wise (good). Each inner loop computes a dot product of two rows with sequential memory access.
+The key difference is the memory access pattern: the naive implementation accesses A row-wise but B column-wise (jumping `colsB` elements at a time), while the transposed version accesses both A and B^T row-wise.
 
 ### 3. Memory Alignment
 
-**Test Setup**: Matrix-matrix multiplication with unaligned vs 64-byte aligned allocations
-
-**Results**:
+We tested whether aligning memory to 64-byte boundaries (matching typical cache line size) would improve performance:
 
 | Size | Unaligned (ms) | 64-byte Aligned (ms) | Speedup |
 |------|----------------|----------------------|---------|
@@ -77,27 +46,17 @@ Results show variable performance depending on matrix size:
 | 512  | 51.6713       | 51.2517             | 1.01x   |
 | 1024 | 490.6303      | 500.3716            | 0.98x   |
 
-**Analysis**:
+The results show minimal impact — alignment provides essentially no benefit (±1-2%). Modern x86-64 CPUs handle unaligned loads efficiently in hardware. Additionally, the implementation does not use explicit SIMD instructions; alignment matters most for operations like `_mm256_load_pd` which require 32-byte alignment. The default `new` operator already provides 8 or 16-byte alignment for doubles, which is sufficient for scalar operations. The 64-byte alignment would matter more with SIMD vectorization (for aligned loads) or multi-threading (to prevent false sharing where different threads' data ends up on the same cache line).
 
-Memory alignment showed **minimal impact** (±1-2%) on performance:
-
-1. **Modern CPUs Handle Misalignment**: Current x86-64 processors have hardware support for unaligned loads/stores with minimal penalty
-
-2. **Compiler Optimization**: At `-O3`, the compiler may already be optimizing memory access patterns
-
-3. **Cache Line Boundaries**: With 64-byte alignment, each row starts at a cache line boundary, potentially preventing false sharing in multi-threaded scenarios (not tested here)
-
-4. **SIMD Potential**: While our code doesn't use SIMD instructions, aligned memory is required for aligned SIMD loads (movaps vs movups), which could show 2-3x speedup
-
-**Recommendation**: For single-threaded code without explicit SIMD, alignment provides marginal benefits. For SIMD-optimized or multi-threaded code, 64-byte alignment becomes more important.
+Alignment had minimal impact for this implementation, but would become important with SIMD vectorization or parallelization.
 
 ### 4. Compiler Optimization Impact
 
-**Test Setup**: Comparing performance of our implemented functions compiled with -O0 (no optimization) vs -O3 (aggressive optimization)
+We compiled the implementations at both -O0 (no optimization) and -O3 (aggressive optimization) to measure compiler impact.
 
 #### 4.1 Matrix-Vector Multiplication
 
-**Results at -O0**:
+**At -O0 (no optimization)**:
 
 | Size | Row-Major (ms) | Col-Major (ms) |
 |------|----------------|----------------|
@@ -115,7 +74,7 @@ Memory alignment showed **minimal impact** (±1-2%) on performance:
 | 1000 | 0.4890        | 0.8116        |
 | 2000 | 2.2369        | 3.5446        |
 
-**Speedup from -O3 optimization**:
+**Speedup from -O3**:
 
 | Size | Row-Major | Col-Major |
 |------|-----------|-----------|
@@ -124,27 +83,13 @@ Memory alignment showed **minimal impact** (±1-2%) on performance:
 | 1000 | 2.37x    | 1.46x    |
 | 2000 | 1.97x    | 1.91x    |
 
+The compiler optimization provides 1.5-4.2x speedups. Row-major operations benefit more (up to 4.2x for small sizes) because the sequential access pattern provides more opportunities for compiler optimization, particularly vectorization.
+
 #### 4.2 Matrix-Matrix Multiplication
 
-**Results at -O0**:
+The matrix-matrix results show even larger speedups:
 
-| Size | Naive (ms) | Transposed B (ms) |
-|------|------------|-------------------|
-| 64   | 0.2989    | 0.3151           |
-| 128  | 2.2706    | 4.8892           |
-| 256  | 17.6031   | 20.3496          |
-| 512  | 140.0751  | 162.3422         |
-
-**Results at -O3**:
-
-| Size | Naive (ms) | Transposed B (ms) |
-|------|------------|-------------------|
-| 64   | 0.0530    | 0.0498           |
-| 128  | 0.5819    | 0.5226           |
-| 256  | 6.4556    | 5.5141           |
-| 512  | 58.3391   | 55.7102          |
-
-**Speedup from -O3 optimization**:
+**Speedup from -O3**:
 
 | Size | Naive | Transposed B |
 |------|-------|--------------|
@@ -153,82 +98,98 @@ Memory alignment showed **minimal impact** (±1-2%) on performance:
 | 256  | 2.73x | 3.69x       |
 | 512  | 2.40x | 2.91x       |
 
-**Analysis**:
+The largest speedup is 9.36x for transposed B at 128×128, where the compiler effectively optimizes the row-row dot product pattern, likely including auto-vectorization. The speedup decreases for larger matrices as memory bandwidth becomes the bottleneck rather than computation.
 
-1. **Massive Performance Improvement**: -O3 provides **1.5-9.4x speedup** across all functions and sizes
-   - Smallest matrices benefit most (up to 9.4x for 128×128 transposed B)
-   - Larger matrices still see 2-2.5x improvement
-   - Row-major matrix-vector shows most consistent gains (2-4.2x)
+The -O3 optimizations include: loop unrolling to reduce overhead, instruction scheduling to minimize CPU stalls, register allocation to reduce memory loads, elimination of redundant computations, potential use of SIMD instructions, and automatic function inlining to remove jump instructions.
 
-2. **What -O3 Does**:
-   - **Loop unrolling**: Reduces loop overhead by processing multiple iterations at once
-   - **Instruction scheduling**: Reorders operations to minimize CPU stalls
-   - **Register allocation**: Keeps frequently used values in CPU registers instead of memory
-   - **Dead code elimination**: Removes unnecessary computations
-   - **Auto-vectorization**: May use SIMD instructions where possible
-   - **Inlining**: Eliminates function call overhead automatically
+Even with -O3, cache-friendly patterns matter. Row-major still beats column-major, and transposed B still helps for larger matrices. Compiler optimization amplifies good algorithm design but does not replace it.
 
-3. **Function-Specific Observations**:
-   - **Matrix-Vector**: Row-major gains more from optimization (4.2x vs 2.4x for small sizes) because the sequential access pattern enables better prefetching and vectorization
-   - **Matrix-Matrix**: Transposed B shows dramatic improvement at size 128 (9.36x), suggesting the compiler effectively optimizes the row-row dot product pattern
-   - **Larger matrices**: As size increases, memory bandwidth becomes the bottleneck, reducing optimization impact
+### 5. Understanding Cache Behavior
 
-4. **Cache Effects Preserved**: Even with -O3, cache-friendly access patterns matter:
-   - Row-major still outperforms column-major at -O3
-   - Transposed B still shows benefits for larger matrices
-   - Optimization amplifies good algorithm design, doesn't replace it
+Modern CPUs have multiple levels of cache with different speeds and sizes. L1 cache is closest to the CPU (32-64 KB, ~4 cycles to access), L2 is further (256-512 KB, ~12 cycles), and L3 is shared across cores (8-32 MB, ~40 cycles). Main memory is large but slow (~200 cycles). Performance depends on keeping frequently accessed data in L1 cache.
 
-**Recommendation**: 
-- **Always compile with -O3** (or at least -O2) for production code
-- Optimization provides "free" performance without code changes
-- Focus on algorithm design first (cache locality, access patterns)
-- Let the compiler handle low-level optimizations (inlining, loop unrolling)
+**Temporal locality** means recently accessed data is likely to be accessed again soon. **Spatial locality** means data near recently accessed data is likely to be accessed soon. The optimizations exploit both: row-major access exploits spatial locality (accessing consecutive elements), and cache blocking exploits temporal locality (reusing data while it remains in cache).
 
-### 5. Key Findings and Cache Behavior Summary
+The performance results demonstrate this:
+- Row-major vs column-major: 1.9-3.6x speedup from better spatial locality
+- Compiler -O3: 1.5-9.4x speedup from register use and instruction-level optimizations
+- Memory alignment: ~1% difference as modern CPUs handle unaligned access efficiently
+- Cache blocking: 2.3-2.6x speedup from better temporal locality (see Section 6)
 
-#### CPU Cache Hierarchy (Typical Modern CPU)
+The optimization hierarchy by importance is: (1) algorithm design for cache locality, (2) compiler optimization flags, (3) data structure layout, (4) fine-tuning like alignment.
 
-- **L1 Cache**: 32-64 KB per core, ~4 cycles latency, separate for data/instructions
-- **L2 Cache**: 256-512 KB per core, ~12 cycles latency
-- **L3 Cache**: 8-32 MB shared, ~40 cycles latency
-- **Main Memory**: GB scale, ~200 cycles latency
+### 6. Implementing Cache Blocking
 
-#### Temporal vs Spatial Locality
+We implemented cache blocking (also called tiling) for matrix multiplication, the most important optimization technique for dense linear algebra.
 
-**Temporal Locality**: Accessing the same data multiple times
-- Exploited by: Blocking/tiling algorithms that reuse data while in cache
-- Example: In matrix multiplication, computing multiple elements that use the same row of A
+#### Why the Naive Implementation Needs Blocking
 
-**Spatial Locality**: Accessing nearby data
-- Exploited by: Sequential memory access patterns
-- Example: Row-major access of matrices
+The naive implementation has poor cache behavior because:
+1. It extracts columns from row-major matrix B using strided access (jumping `colsB` elements)
+2. It allocates temporary arrays for each column of B
+3. It does not reuse data — each element of A and B is loaded from memory multiple times
 
-#### Optimizations Applied
+Cache blocking fixes this by dividing the matrices into smaller tiles that fit in cache, then computing the result tile by tile.
 
-1. **Row-Major Access**: 1.9-3.6x faster than column-major for matrix-vector
-2. **Transposed B**: 1.17-1.66x faster for large matrix-matrix multiplication
-3. **Compiler -O3**: 1.5-9.4x faster than -O0 (varies by function and size)
-4. **Memory Alignment**: Minimal impact (~1%) without SIMD
+#### Implementation Details
 
-### 6. Future Optimization Opportunities
+We chose a block size of 32×32 elements, which is 8KB per block. Three such blocks (two inputs, one output) take 24KB, fitting comfortably in a typical 32KB L1 cache. We also changed the loop order from i-j-k to i-k-j, which is crucial for performance:
 
-1. **Blocking/Tiling**: Divide matrices into cache-sized blocks (not yet implemented)
-2. **SIMD Vectorization**: Use AVX2/AVX-512 for 4-8x parallelism
-3. **Loop Unrolling**: Reduce loop overhead (compiler may do this at -O3)
-4. **Prefetching**: Manual prefetch instructions for predictable access patterns
-5. **Multi-threading**: Parallelize across rows or tiles using OpenMP
+```cpp
+for (int ii = 0; ii < rowsA; ii += BLOCK_SIZE) {
+    for (int kk = 0; kk < colsA; kk += BLOCK_SIZE) {
+        for (int jj = 0; jj < colsB; jj += BLOCK_SIZE) {
+            for (int i = ii; i < i_max; ++i) {
+                for (int k = kk; k < k_max; ++k) {
+                    double a_val = matrixA[i * colsA + k];  // Load once
+                    for (int j = jj; j < j_max; ++j) {
+                        result[i * colsB + j] += a_val * matrixB[k * colsB + j];
+                    }
+                }
+            }
+        }
+    }
+}
+```
 
-### Conclusion
+The key optimization is loading `A[i,k]` once in the middle loop and reusing it across an entire row of B. This provides an innermost loop that the compiler can effectively vectorize.
 
-Cache locality dominates performance in linear algebra operations. Our analysis shows:
+#### Performance Results
 
-- **Memory access patterns matter more than alignment** (3.6x vs 1% speedup)
-- **Compiler optimizations are essential** (28-40% improvement)
-- **Row-major access patterns exploit spatial locality** effectively
-- **Algorithm choice** (transposed B) can improve cache utilization for large matrices
+| Matrix Size | Naive (ms) | Blocked (ms) | Speedup |
+|-------------|------------|--------------|---------|
+| 128×128     | 0.69      | 0.30        | 2.30x   |
+| 256×256     | 6.69      | 2.76        | 2.42x   |
+| 512×512     | 70.22     | 27.13       | 2.59x   |
+| 1024×1024   | 605.62    | 249.61      | 2.43x   |
 
-The hierarchy of optimization priorities is:
-1. Algorithm design (cache-friendly access patterns)
-2. Compiler optimization flags
-3. Data structure layout (row/column major)
-4. Fine-tuning (alignment, manual inlining)
+Cache blocking provides a consistent 2.3-2.6x speedup across all sizes. The speedup is relatively constant because the blocking strategy works at all scales — each 32×32 tile benefits from being cache-resident regardless of the overall matrix size.
+
+#### Analysis
+
+Without blocking, there are O(N³) cache misses because each element gets loaded from memory multiple times. With blocking, this is reduced to O(N³/B) cache misses where B is the block size, because elements are reused while they remain in cache.
+
+The i-k-j loop order is important because it enables sequential access to B. In each iteration of the innermost j-loop, consecutive elements of B are accessed, which the hardware prefetcher can predict. The compiler can also vectorize this loop effectively.
+
+Comparison to other optimizations:
+- vs Naive: 2.4x faster (cache blocking)
+- vs Transposed B: 2.2x faster 
+- vs -O3 compiler optimization: Orthogonal — blocking works on top of -O3
+
+#### Further Optimizations
+
+Additional optimizations are possible: adaptive block sizes based on cache detection, explicit SIMD instructions, multi-threading with OpenMP. Combined, these optimizations (blocking 2.4x × SIMD 4x × threading 8x) could theoretically provide 77x speedup, approaching optimized BLAS libraries. For this project, the 2.4x from blocking demonstrates the core principle.
+
+### Summary
+
+High-performance computing depends on understanding the memory hierarchy. The CPU is fast, but memory is slow, so performance depends on keeping frequently accessed data in the fastest cache level.
+
+Key findings:
+1. **Memory access patterns dominate** — row-major vs column-major provides 3.6x speedup
+2. **Algorithm design matters most** — cache blocking provides 2.4x speedup on top of other optimizations
+3. **Compiler optimizations are essential** — -O3 provides up to 9.4x speedup
+4. **Micro-optimizations have diminishing returns** — alignment provides ~1% benefit
+
+The optimization hierarchy is: first design cache-friendly algorithms, then use compiler optimizations, then optimize data layout, and only at the end consider fine-tuning like alignment.
+
+Production code should use libraries like OpenBLAS or Intel MKL that implement these optimizations plus many more (multi-level blocking, SIMD, multi-threading, architecture-specific tuning). Implementing blocking demonstrates why those libraries are significantly faster than naive implementations.

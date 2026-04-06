@@ -255,8 +255,6 @@ void benchmark_alignment() {
   }
 }
 
-
-
 int main() {
   std::cout << "==========================================" << std::endl;
   std::cout << "  Cache Locality & Alignment Benchmarks  " << std::endl;
