@@ -1,0 +1,3 @@
+# Momentum Strategy in HFT Client
+
+This assignment shows a momentum strategy in action inside of a client program that communicates with a server through TCP. The client program is sent asset prices and keeps track of them using a deque from the C++ STL. The client decides whether or not to send an order based on a basic momentum strategy: if the last three prices have each gone down or up, then the program sends an order to the server. For logging, the program prints out which decision it made and also the proportion of prices that it has sent orders on. The code can be expanded upon to support more sophisticated strategies; for instance, we can use moving averages to support RSI strategies.

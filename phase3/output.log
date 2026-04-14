@@ -1,0 +1,53 @@
+[Market] Best Bid: 100.10 x 300
+[Market] Best Ask: none
+[Market] Best Bid: 100.10 x 300
+[Market] Best Ask: 100.20 x 250
+[Market] Best Bid: 100.15 x 200
+[Market] Best Ask: 100.20 x 250
+[Market] Best Bid: 100.15 x 200
+[Market] Best Ask: 100.18 x 100
+[Market] Best Bid: 100.15 x 200
+[Market] Best Ask: 100.18 x 60
+[Strategy] Signal: mid 100.17 vs avg 100.16, threshold 100.14, spread 0.03 avg_spread 0.05
+[Strategy] Placing SELL order at 100.18 x 50 (ID = 1)
+[Market] Best Bid: 100.15 x 200
+[Market] Best Ask: 100.18 x 60
+[Market] Best Bid: 100.15 x 200
+[Market] Best Ask: 100.18 x 30
+[Market] Best Bid: 100.15 x 200
+[Market] Best Ask: 100.20 x 250
+[Market] Best Bid: 100.15 x 200
+[Market] Best Ask: 100.20 x 250
+[Execution] Order 1 filled: 10
+[Order] Order 1 partially filled: 10 / 50
+[Market] Best Bid: 100.15 x 200
+[Market] Best Ask: 100.20 x 250
+[Execution] Order 1 filled: 20
+[Order] Order 1 partially filled: 30 / 50
+[Market] Best Bid: 100.15 x 200
+[Market] Best Ask: 100.20 x 250
+[Execution] Order 1 filled: 20
+[Order] Order 1 completed (50 / 50) and removed
+[Market] Best Bid: 100.15 x 200
+[Market] Best Ask: 100.20 x 250
+[Strategy] Signal: mid 100.18 vs avg 100.18, threshold 100.15, spread 0.05 avg_spread 0.05
+[Strategy] Placing SELL order at 100.20 x 100 (ID = 2)
+[Market] Best Bid: 100.17 x 100
+[Market] Best Ask: 100.20 x 250
+[Execution] Order 2 filled: 50
+[Order] Order 2 partially filled: 50 / 100
+[Market] Best Bid: 100.17 x 100
+[Market] Best Ask: 100.20 x 250
+[Market] Best Bid: 100.17 x 100
+[Market] Best Ask: 100.20 x 250
+[Market] Best Bid: 100.17 x 100
+[Market] Best Ask: 100.20 x 250
+[Execution] Order 2 filled: 50
+[Order] Order 2 completed (100 / 100) and removed
+[Market] Best Bid: 100.17 x 100
+[Market] Best Ask: 100.20 x 250
+[Market] Best Bid: 100.20 x 300
+[Market] Best Ask: 100.20 x 250
+[Market] Best Bid: 100.20 x 300
+[Market] Best Ask: 100.20 x 250
+[Order] Active orders: 0
