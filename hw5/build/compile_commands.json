@@ -1,0 +1,80 @@
+[
+{
+  "directory": "/Users/avo/GitHub/finm32700/hw5/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/hw5/include -std=c++20 -arch arm64 -o CMakeFiles/hash_table_benchmark.dir/benchmarks/hash_table_benchmark.cpp.o -c /Users/avo/GitHub/finm32700/hw5/benchmarks/hash_table_benchmark.cpp",
+  "file": "/Users/avo/GitHub/finm32700/hw5/benchmarks/hash_table_benchmark.cpp",
+  "output": "CMakeFiles/hash_table_benchmark.dir/benchmarks/hash_table_benchmark.cpp.o"
+},
+{
+  "directory": "/Users/avo/GitHub/finm32700/hw5/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/hw5/include -std=c++20 -arch arm64 -o CMakeFiles/hash_table_benchmark.dir/src/robin_hood_hash_table.cpp.o -c /Users/avo/GitHub/finm32700/hw5/src/robin_hood_hash_table.cpp",
+  "file": "/Users/avo/GitHub/finm32700/hw5/src/robin_hood_hash_table.cpp",
+  "output": "CMakeFiles/hash_table_benchmark.dir/src/robin_hood_hash_table.cpp.o"
+},
+{
+  "directory": "/Users/avo/GitHub/finm32700/hw5/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/hw5/include -std=c++20 -arch arm64 -o CMakeFiles/hw5_benchmarks.dir/benchmarks/run_benchmarks.cpp.o -c /Users/avo/GitHub/finm32700/hw5/benchmarks/run_benchmarks.cpp",
+  "file": "/Users/avo/GitHub/finm32700/hw5/benchmarks/run_benchmarks.cpp",
+  "output": "CMakeFiles/hw5_benchmarks.dir/benchmarks/run_benchmarks.cpp.o"
+},
+{
+  "directory": "/Users/avo/GitHub/finm32700/hw5/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/hw5/include -std=c++20 -arch arm64 -o CMakeFiles/hw5_benchmarks.dir/src/robin_hood_hash_table.cpp.o -c /Users/avo/GitHub/finm32700/hw5/src/robin_hood_hash_table.cpp",
+  "file": "/Users/avo/GitHub/finm32700/hw5/src/robin_hood_hash_table.cpp",
+  "output": "CMakeFiles/hw5_benchmarks.dir/src/robin_hood_hash_table.cpp.o"
+},
+{
+  "directory": "/Users/avo/GitHub/finm32700/hw5/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/hw5/include -std=c++20 -arch arm64 -o CMakeFiles/hw5_benchmarks.dir/src/order_priority_queue.cpp.o -c /Users/avo/GitHub/finm32700/hw5/src/order_priority_queue.cpp",
+  "file": "/Users/avo/GitHub/finm32700/hw5/src/order_priority_queue.cpp",
+  "output": "CMakeFiles/hw5_benchmarks.dir/src/order_priority_queue.cpp.o"
+},
+{
+  "directory": "/Users/avo/GitHub/finm32700/hw5/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/hw5/include -std=c++20 -arch arm64 -o CMakeFiles/hw5_benchmarks.dir/src/time_series_processor.cpp.o -c /Users/avo/GitHub/finm32700/hw5/src/time_series_processor.cpp",
+  "file": "/Users/avo/GitHub/finm32700/hw5/src/time_series_processor.cpp",
+  "output": "CMakeFiles/hw5_benchmarks.dir/src/time_series_processor.cpp.o"
+},
+{
+  "directory": "/Users/avo/GitHub/finm32700/hw5/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/hw5/include -std=c++20 -arch arm64 -o CMakeFiles/hw5_benchmarks.dir/src/order_book.cpp.o -c /Users/avo/GitHub/finm32700/hw5/src/order_book.cpp",
+  "file": "/Users/avo/GitHub/finm32700/hw5/src/order_book.cpp",
+  "output": "CMakeFiles/hw5_benchmarks.dir/src/order_book.cpp.o"
+},
+{
+  "directory": "/Users/avo/GitHub/finm32700/hw5/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/hw5/include -std=c++20 -arch arm64 -o CMakeFiles/hw5_benchmarks.dir/src/benchmarks.cpp.o -c /Users/avo/GitHub/finm32700/hw5/src/benchmarks.cpp",
+  "file": "/Users/avo/GitHub/finm32700/hw5/src/benchmarks.cpp",
+  "output": "CMakeFiles/hw5_benchmarks.dir/src/benchmarks.cpp.o"
+},
+{
+  "directory": "/Users/avo/GitHub/finm32700/hw5/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/hw5/include -std=c++20 -arch arm64 -o CMakeFiles/hw5_stubs.dir/src/robin_hood_hash_table.cpp.o -c /Users/avo/GitHub/finm32700/hw5/src/robin_hood_hash_table.cpp",
+  "file": "/Users/avo/GitHub/finm32700/hw5/src/robin_hood_hash_table.cpp",
+  "output": "CMakeFiles/hw5_stubs.dir/src/robin_hood_hash_table.cpp.o"
+},
+{
+  "directory": "/Users/avo/GitHub/finm32700/hw5/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/hw5/include -std=c++20 -arch arm64 -o CMakeFiles/hw5_stubs.dir/src/order_priority_queue.cpp.o -c /Users/avo/GitHub/finm32700/hw5/src/order_priority_queue.cpp",
+  "file": "/Users/avo/GitHub/finm32700/hw5/src/order_priority_queue.cpp",
+  "output": "CMakeFiles/hw5_stubs.dir/src/order_priority_queue.cpp.o"
+},
+{
+  "directory": "/Users/avo/GitHub/finm32700/hw5/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/hw5/include -std=c++20 -arch arm64 -o CMakeFiles/hw5_stubs.dir/src/time_series_processor.cpp.o -c /Users/avo/GitHub/finm32700/hw5/src/time_series_processor.cpp",
+  "file": "/Users/avo/GitHub/finm32700/hw5/src/time_series_processor.cpp",
+  "output": "CMakeFiles/hw5_stubs.dir/src/time_series_processor.cpp.o"
+},
+{
+  "directory": "/Users/avo/GitHub/finm32700/hw5/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/hw5/include -std=c++20 -arch arm64 -o CMakeFiles/hw5_stubs.dir/src/order_book.cpp.o -c /Users/avo/GitHub/finm32700/hw5/src/order_book.cpp",
+  "file": "/Users/avo/GitHub/finm32700/hw5/src/order_book.cpp",
+  "output": "CMakeFiles/hw5_stubs.dir/src/order_book.cpp.o"
+},
+{
+  "directory": "/Users/avo/GitHub/finm32700/hw5/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/hw5/include -std=c++20 -arch arm64 -o CMakeFiles/hw5_stubs.dir/src/benchmarks.cpp.o -c /Users/avo/GitHub/finm32700/hw5/src/benchmarks.cpp",
+  "file": "/Users/avo/GitHub/finm32700/hw5/src/benchmarks.cpp",
+  "output": "CMakeFiles/hw5_stubs.dir/src/benchmarks.cpp.o"
+}
+]

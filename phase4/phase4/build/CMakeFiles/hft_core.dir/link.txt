@@ -1,0 +1,2 @@
+/usr/bin/ar qc libhft_core.a CMakeFiles/hft_core.dir/src/MarketData.cpp.o CMakeFiles/hft_core.dir/src/TradeLogger.cpp.o
+/usr/bin/ranlib libhft_core.a

@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/Users/avo/GitHub/finm32700/hw4/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/hw4/include -std=gnu++17 -arch arm64 -o CMakeFiles/HFTTemplateHomework.dir/src/main.cpp.o -c /Users/avo/GitHub/finm32700/hw4/src/main.cpp",
+  "file": "/Users/avo/GitHub/finm32700/hw4/src/main.cpp",
+  "output": "CMakeFiles/HFTTemplateHomework.dir/src/main.cpp.o"
+}
+]

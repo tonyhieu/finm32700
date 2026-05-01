@@ -1,0 +1,5 @@
+/Users/avo/GitHub/finm32700/hw5/build/CMakeFiles/hash_table_benchmark.dir
+/Users/avo/GitHub/finm32700/hw5/build/CMakeFiles/hw5_benchmarks.dir
+/Users/avo/GitHub/finm32700/hw5/build/CMakeFiles/hw5_stubs.dir
+/Users/avo/GitHub/finm32700/hw5/build/CMakeFiles/edit_cache.dir
+/Users/avo/GitHub/finm32700/hw5/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,26 @@
+[
+{
+  "directory": "/Users/avo/GitHub/finm32700/phase4/hft_project/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/phase4/hft_project/include -std=c++17 -arch arm64 -o CMakeFiles/hft_core.dir/src/MarketData.cpp.o -c /Users/avo/GitHub/finm32700/phase4/hft_project/src/MarketData.cpp",
+  "file": "/Users/avo/GitHub/finm32700/phase4/hft_project/src/MarketData.cpp",
+  "output": "CMakeFiles/hft_core.dir/src/MarketData.cpp.o"
+},
+{
+  "directory": "/Users/avo/GitHub/finm32700/phase4/hft_project/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/phase4/hft_project/include -std=c++17 -arch arm64 -o CMakeFiles/hft_core.dir/src/TradeLogger.cpp.o -c /Users/avo/GitHub/finm32700/phase4/hft_project/src/TradeLogger.cpp",
+  "file": "/Users/avo/GitHub/finm32700/phase4/hft_project/src/TradeLogger.cpp",
+  "output": "CMakeFiles/hft_core.dir/src/TradeLogger.cpp.o"
+},
+{
+  "directory": "/Users/avo/GitHub/finm32700/phase4/hft_project/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/phase4/hft_project/include -std=c++17 -arch arm64 -o CMakeFiles/hft_app.dir/src/main.cpp.o -c /Users/avo/GitHub/finm32700/phase4/hft_project/src/main.cpp",
+  "file": "/Users/avo/GitHub/finm32700/phase4/hft_project/src/main.cpp",
+  "output": "CMakeFiles/hft_app.dir/src/main.cpp.o"
+},
+{
+  "directory": "/Users/avo/GitHub/finm32700/phase4/hft_project/build",
+  "command": "/usr/bin/c++  -I/Users/avo/GitHub/finm32700/phase4/hft_project/include -std=c++17 -arch arm64 -o CMakeFiles/test_latency.dir/test/test_latency.cpp.o -c /Users/avo/GitHub/finm32700/phase4/hft_project/test/test_latency.cpp",
+  "file": "/Users/avo/GitHub/finm32700/phase4/hft_project/test/test_latency.cpp",
+  "output": "CMakeFiles/test_latency.dir/test/test_latency.cpp.o"
+}
+]

@@ -1,0 +1,2 @@
+/usr/bin/ar qc libhw5_stubs.a CMakeFiles/hw5_stubs.dir/src/robin_hood_hash_table.cpp.o CMakeFiles/hw5_stubs.dir/src/order_priority_queue.cpp.o CMakeFiles/hw5_stubs.dir/src/time_series_processor.cpp.o CMakeFiles/hw5_stubs.dir/src/order_book.cpp.o CMakeFiles/hw5_stubs.dir/src/benchmarks.cpp.o
+/usr/bin/ranlib libhw5_stubs.a
