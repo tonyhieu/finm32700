@@ -1,0 +1,62 @@
+Participation quiz 1 
+C++ Threading Exercise: Sequential vs. Multithreaded Dot Product
+
+You will implement two versions of a dot product between large vectors: a sequential version and a threaded version using std::thread. 
+You will then increase the number of threads (1, 2, 4, 8, ...) and measure how long each run takes. 
+Next, you will plot a chart comparing performance and observe when adding threads stops giving speedups. 
+Finally, you will determine how many CPU cores your machine has and discuss why the performance curve behaves the way it does.
+
+---------------------------------------------------------------------
+
+Participation quiz 2 
+C++ Concurrency Exercise: Create and Remove a Deadlock
+
+You will write a small C++ program that intentionally produces a deadlock using two mutexes and two threads. 
+Each thread will lock the mutexes in opposite order, causing both threads to wait forever. 
+Then you will modify the program to remove the deadlock by enforcing a consistent lock order or by using a std::scoped_lock.
+
+Your Tasks 
+- Create two mutexes and two threads. 
+- In thread A, lock mutex A then mutex B. 
+- In thread B, lock mutex B then mutex A. 
+- Run the program and observe the deadlock (the program will hang). 
+- Fix the deadlock by: 
+  - enforcing the same lock order in both threads, or 
+  - replacing both locks with std::scoped_lock to acquire them atomically. 
+- Re-run the program and confirm it completes normally.
+
+---------------------------------------------------------------------
+
+Participation quiz 3 
+C++ Concurrency Exercise: Why You Need a Condition Variable
+
+You will write a small program where one thread waits for work and another thread produces work. 
+First, you will try to coordinate them without a condition variable, using only a shared boolean flag. 
+You will see that the waiting thread must spin in a loop, wasting CPU and sometimes missing the update entirely. 
+Then you will rewrite the program using a condition variable so the waiting thread sleeps efficiently and wakes up exactly when the work is ready.
+
+Your Tasks 
+- Create a shared flag: bool ready = false. 
+- Start a worker thread that loops until ready == true (busy-waiting). 
+- Start a producer thread that sleeps for a moment, then sets ready = true. 
+- Observe the CPU usage and the inefficiency of the busy-wait. 
+- Replace the busy-wait with a condition variable so the worker sleeps until notified. 
+- Compare the behavior and explain why the condition variable is the correct tool.
+
+---------------------------------------------------------------------
+
+Participation quiz 4 
+
+C++ Exercise: Producer-Consumer With Threads vs. Processes
+
+You will implement a simple producer-consumer pipeline twice: 
+first using threads and then using processes communicating through a pipe or shared memory. 
+Your goal is to measure and compare the throughput and latency of both implementations.
+
+Your Tasks 
+- Implement a thread-based producer-consumer using a shared queue protected by a mutex and condition variable. 
+- Implement a process-based producer-consumer using either a POSIX pipe or shared memory plus semaphores. 
+- Have the producer generate N items (for example integers) and the consumer process them. 
+- Measure total time for each version and compute throughput (items per second). 
+- Plot the results and explain why threads are typically faster (shared address space, cheaper context switches) while processes offer stronger isolation.
+
